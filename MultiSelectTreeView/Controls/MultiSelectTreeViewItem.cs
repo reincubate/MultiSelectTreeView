@@ -636,11 +636,13 @@ namespace System.Windows.Controls
 			//System.Diagnostics.Debug.WriteLine(Environment.StackTrace);
 		}
 
+        bool awaitingDrag = false;
 		protected override void OnMouseDown(MouseButtonEventArgs e)
 		{
 			//System.Diagnostics.Debug.WriteLine("MultiSelectTreeViewItem.OnMouseDown(Item = " + this.DisplayName + ", Button = " + e.ChangedButton + ")");
 			base.OnMouseDown(e);
 
+            awaitingDrag = false;
 			FrameworkElement itemContent = (FrameworkElement) this.Template.FindName("headerBorder", this);
 			if (!itemContent.IsMouseOver)
 			{
@@ -650,7 +652,14 @@ namespace System.Windows.Controls
 
 			if (e.ChangedButton == MouseButton.Left)
 			{
-				ParentTreeView.Selection.Select(this);
+                if (ParentTreeView.MultiDrag && ParentTreeView.SelectedItems.Count > 1 && this.IsSelected)
+                {
+                    awaitingDrag = true;
+                }
+                else
+                {
+                    ParentTreeView.Selection.Select(this);
+                }
 				e.Handled = true;
 			}
 			if (e.ChangedButton == MouseButton.Right)
@@ -663,7 +672,18 @@ namespace System.Windows.Controls
 			}
 		}
 
-		protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
+        protected override void OnMouseUp(MouseButtonEventArgs e)
+        {
+            base.OnMouseUp(e);
+
+            if(awaitingDrag)
+            {
+                awaitingDrag = false;
+                ParentTreeView.Selection.Select(this);
+            }
+        }
+
+        protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
 		{
 			MultiSelectTreeView parentTV;
 

@@ -21,7 +21,13 @@ namespace System.Windows.Controls
 
 		public static readonly DependencyProperty LastSelectedItemProperty;
 
-		public static DependencyProperty BackgroundSelectionRectangleProperty = DependencyProperty.Register(
+        public static DependencyProperty MultiDragProperty = DependencyProperty.Register(
+            "MultiDrag",
+            typeof(bool),
+            typeof(MultiSelectTreeViewItem),
+            new FrameworkPropertyMetadata(false), null);
+
+        public static DependencyProperty BackgroundSelectionRectangleProperty = DependencyProperty.Register(
 			"BackgroundSelectionRectangle",
 			typeof(Brush),
 			typeof(MultiSelectTreeViewItem),
@@ -96,6 +102,18 @@ namespace System.Windows.Controls
 		#endregion
 
 		#region Public Properties
+
+        public bool MultiDrag
+        {
+            get
+            {
+                return (bool)GetValue(MultiDragProperty);
+            }
+            set
+            {
+                SetValue(MultiDragProperty, value);
+            }
+        }
 
 		public Brush BackgroundSelectionRectangle
 		{
